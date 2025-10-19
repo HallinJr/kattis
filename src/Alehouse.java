@@ -7,7 +7,7 @@ public class Alehouse {
     ArrayList<String> residents ;
     int myInterval;
     int numberOfResidents;
-    ArrayList<Integer> friendsMet = new ArrayList<>();
+
 
 
     public Alehouse(ArrayList<String> list, int myInterval, int numberOfResidents) {
@@ -17,20 +17,15 @@ public class Alehouse {
         checkMaximumFriendsForInterval();
     }
 
-    private int[] getMaxEndTimeAndFirstStartTime() {
+    private int getMaxEndTime() {
         Integer[] endTimes = new Integer[numberOfResidents];
-        Integer[] startTimes = new Integer[numberOfResidents];
-
         for (int i = 0; i < numberOfResidents; i++) {
-            int[] times = getResidentsTime(i);
-            startTimes[i] = times[0];
-            endTimes[i] = times[1];
+            int endTime = getResidentsTime(i)[1];
+            endTimes[i] = endTime;
         }
-
         Arrays.sort(endTimes, Collections.reverseOrder());
-        Arrays.sort(startTimes);
 
-        return new int[]{startTimes[0], endTimes[0]};
+        return endTimes[0];
     }
 
     private int[] getResidentsTime(int i) {
@@ -44,27 +39,40 @@ public class Alehouse {
     }
 
     private void checkMaximumFriendsForInterval() {
-        int myStartTime = getMaxEndTimeAndFirstStartTime()[0];
+        int[] startTimes = new int[numberOfResidents];
+        int[] endTimes = new int[numberOfResidents];
+        ArrayList<Integer> friendsMet = new ArrayList<>();
 
-        while (myStartTime + myInterval <= getMaxEndTimeAndFirstStartTime()[1]) {
+        for (int i= 0; i < numberOfResidents; i++) {
+            startTimes[i] = getResidentsTime(i)[0];
+            endTimes[i] = getResidentsTime(i)[1];
+        }
+
+        for (int i = 0; i < numberOfResidents; i++) {
+            int myStartTime = startTimes[i];
             int myEndTime = myStartTime + myInterval;
-            int numberOfFriends = 0;
-            for (int i = 0; i < numberOfResidents; i++) {
+            int numberOfFriendsMetAtThatTime = 0;
 
-                if (myStartTime <= getResidentsTime(i)[0] && myEndTime >= getResidentsTime(i)[0] ||
-                        getResidentsTime(i)[1] >= myStartTime && getResidentsTime(i)[1] <= myEndTime ||
-                        getResidentsTime(i)[0] <= myStartTime && getResidentsTime(i)[1] >= myEndTime) {
-                    numberOfFriends++;
+
+            while (myStartTime < endTimes[i]) {
+                for (int j = i + 1; j < numberOfResidents; j++) {
+                    if (myStartTime <= getResidentsTime(j)[0] && myEndTime >= getResidentsTime(j)[0]) {
+                        numberOfFriendsMetAtThatTime++;
+                    } else if (getResidentsTime(j)[1] >= myStartTime && getResidentsTime(j)[1] <= myEndTime) {
+                        numberOfFriendsMetAtThatTime++;
+                    }
+                    myStartTime++;
+                    myEndTime++;
                 }
             }
-            friendsMet.add(numberOfFriends);
 
-
-            myStartTime++;
-
+                friendsMet.add(numberOfFriendsMetAtThatTime);
         }
-        Collections.sort(friendsMet);
 
-        System.out.println(friendsMet.getLast());
+        Collections.sort(friendsMet);
+        Collections.reverse(friendsMet);
+//        System.out.println(friendsMet);
+        System.out.println(friendsMet.getFirst());
     }
+
 }
