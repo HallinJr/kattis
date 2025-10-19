@@ -49,7 +49,7 @@ public class Alehouse {
         }
 
         for (int i = 0; i < numberOfResidents; i++) {
-            int myStartTime = startTimes[i];
+            int myStartTime = startTimes[i] - myInterval;
             int myEndTime = myStartTime + myInterval;
             int numberOfFriendsMetAtThatTime = 0;
 
@@ -62,7 +62,7 @@ public class Alehouse {
                         numberOfFriendsMetAtThatTime++;
                     }
                     myStartTime++;
-                    myEndTime++;
+//                    myEndTime++;
                 }
             }
 
