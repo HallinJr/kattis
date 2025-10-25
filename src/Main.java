@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Main {
@@ -6,19 +5,51 @@ public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        ArrayList<int[]> list = new ArrayList<>();
+        int smallBook = sc.nextInt();
+        int mediumBook = sc.nextInt();
+        int bigBook = sc.nextInt();
+        int shelveLength = sc.nextInt();
+        int totalBooks = smallBook + mediumBook + bigBook;
+        int shelvesNeeded = 0;
 
-        int residents = sc.nextInt();
-        int myTime = sc.nextInt();
+        if (smallBook > 0 && mediumBook == 0 && bigBook == 0) {
+            if (smallBook == 1) System.out.println(2);
+            else {
+                System.out.println((int) Math.ceil((double) smallBook / shelveLength));
+            }
+        } else {
 
-        for (int i = 0; i < residents; i++) {
-            int startTime = sc.nextInt();
-            int endTime = sc.nextInt();
+            while (totalBooks != 0) {
+                int spaceLeft = shelveLength;
+                boolean isBigBookInShelf = false;
+                while (spaceLeft != 0) {
 
-            int[] startAndEndTime = new int[]{startTime, endTime};
-            list.add(startAndEndTime);
+                    if (bigBook != 0 && spaceLeft >= 3) {
+                        spaceLeft -= 3;
+                        bigBook--;
+                        isBigBookInShelf = true;
+                    } else if (isBigBookInShelf && spaceLeft == 1 && mediumBook > 1) {
+                        bigBook++;
+                        spaceLeft += 3;
+                        mediumBook -= 2;
+                        spaceLeft -= 4;
+
+                    } else if (mediumBook != 0 && spaceLeft >= 2) {
+                        spaceLeft -= 2;
+                        mediumBook--;
+                    } else if (smallBook != 0) {
+                        spaceLeft -= 1;
+                        smallBook--;
+                    } else {
+                        break;
+                    }
+                    totalBooks--;
+                }
+                shelvesNeeded++;
+
+            }
+            System.out.println(shelvesNeeded);
+
         }
-        new Alehouse(list, myTime, residents);
-
     }
 }
