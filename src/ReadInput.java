@@ -16,7 +16,7 @@ public class ReadInput {
         this.sc = scanner;
         this.firstLine = sc.nextLine();
         getFirstLineValues();
-        partners = new int[totalCountries];
+        partners = new int[totalCountries + 1];
     }
 
     public void getFirstLineValues() {
@@ -32,10 +32,10 @@ public class ReadInput {
     }
 
     public ArrayList<Integer>[] getPartners() {
-        final ArrayList<Integer>[] partnerShip = new ArrayList[getNumberOfPartnerShips()];
+        final ArrayList<Integer>[] countriesPartners = new ArrayList[getTotalCountries() + 1];
 
-        for (int i = 0; i < getNumberOfPartnerShips(); i++) {
-            partnerShip[i] = new ArrayList<>();
+        for (int i = 0; i < getTotalCountries() + 1; i++) {
+            countriesPartners[i] = new ArrayList<>();
         }
 
         for (int i = 0; i < getNumberOfPartnerShips(); i++) {
@@ -44,20 +44,20 @@ public class ReadInput {
             int secondVal = Integer.parseInt(pair.split(" ")[1]);
             /*  print for visual    */
 //            System.out.println(pair);
-            partnerShip[i].add(firstVal);
-            partners[firstVal - 1]++;
-            partnerShip[i].add(secondVal);
-            partners[secondVal - 1]++;
+            countriesPartners[firstVal].add(secondVal);
+            partners[firstVal]++;
+            countriesPartners[secondVal].add(firstVal);
+            partners[secondVal]++;
 
         }
 
         /*  print for visual    */
 //        for (int i = 0; i < numberOfPartnerShips; i++) {
-//            System.out.print(partnerShip[i].get(0));
-//            System.out.println(partnerShip[i].get(1));
+//            System.out.print(countriesPartners[i].get(0));
+//            System.out.println(countriesPartners[i].get(1));
 //        }
 
-        return partnerShip;
+        return countriesPartners;
     }
 
     public int[] getOriginalNumberOfPartners() {

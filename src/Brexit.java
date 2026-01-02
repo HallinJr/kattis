@@ -1,106 +1,61 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Brexit implements Cloneable {
 
     private ReadInput input;
-    private ArrayList<Integer>[] updatedPartners;
+    private int totalCountries;
+    int myCountry;
     private final int[] numberOfPartnersFromStart;
     private final int[] numberOfPartnersCurrent;
-    private boolean hasChanged;
     private final int[] hasLeft;
+    private final ArrayList<Integer>[] partners;
 
     public Brexit(ReadInput readInput) {
         this.input = readInput;
-        hasLeft = new int[input.getTotalCountries()];
-        updatedPartners = input.getPartners();
-        numberOfPartnersFromStart = input.getOriginalNumberOfPartners();
-        numberOfPartnersCurrent = input.getOriginalNumberOfPartners().clone();
-        if (input.getMyCountry() == input.getFirstToLeave()) {
-            System.out.println("leave");
-            System.exit(0);
-        } else if (input.getOriginalNumberOfPartnersForCountry(input.getMyCountry()) == 0) {
-            System.out.println("gay");
-            System.exit(0);
-        }
+        this.partners = input.getPartners();
+        this.totalCountries = input.getTotalCountries();
+        this.myCountry = input.getMyCountry();
+        this.hasLeft = new int[input.getTotalCountries() + 1];
+        this.numberOfPartnersFromStart = input.getOriginalNumberOfPartners();
+        this.numberOfPartnersCurrent = input.getOriginalNumberOfPartners().clone();
 
-        anotherMasterAlgorithm();
+        masterAlgorithm(input.getFirstToLeave());
     }
 
 
-    public void anotherMasterAlgorithm() {
-        hasChanged = true;
+    public void masterAlgorithm(int firstToLeave) {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(firstToLeave);
 
-        masterAlgorithm(input.getFirstToLeave());
+        while (!queue.isEmpty()) {
+            int leaving = queue.poll();
 
-        while (hasChanged) {
-            int firstCount = sumOfAll(numberOfPartnersCurrent);
-            for (int i = 0; i < input.getTotalCountries(); i++) {
-                if (i + 1 == hasLeft[i]) {
-                    continue;
-                }
-                if (is50PercentOrMoreGone(numberOfPartnersFromStart[i], numberOfPartnersCurrent[i])) {
+            if (hasLeft[leaving] == leaving) continue;
+            hasLeft[leaving] = leaving;
 
-                    masterAlgorithm(i + 1);
-                }
+            if (leaving == input.getMyCountry()) {
+                System.out.println("leave");
+                return;
             }
-            int secondCount = sumOfAll(numberOfPartnersCurrent);
-            if (firstCount == secondCount) {
-                hasChanged = false;
+
+            for (int partner : partners[leaving]) {
+                if (hasLeft[partner] == partner) continue;
+
+                numberOfPartnersCurrent[partner]--;
+
+                if (is50PercentOrMoreGone(numberOfPartnersFromStart[partner], numberOfPartnersCurrent[partner])) {
+                    queue.add(partner);
+                }
             }
         }
         System.out.println("stay");
 
     }
 
-    public void masterAlgorithm (int remove) {
-        hasLeft[remove - 1] = remove;
-
-
-        if (is50PercentOrMoreGone(numberOfPartnersFromStart[input.getMyCountry() - 1], numberOfPartnersCurrent[input.getMyCountry() - 1])) {
-            System.out.println("leave");
-            System.exit(0);
-        }
-
-        int firstCount = sumOfAll(numberOfPartnersFromStart);
-
-        int index = 0;
-        for (ArrayList<Integer> pair : updatedPartners) {
-
-            if (pair.isEmpty()) {
-                continue;
-            }
-
-            if (pair.getFirst() == remove) {
-                numberOfPartnersCurrent[pair.getLast() - 1]--;
-                updatedPartners[index].removeAll(pair);
-            } else if (pair.getLast() == remove) {
-                numberOfPartnersCurrent[pair.getFirst() - 1]--;
-                updatedPartners[index].removeAll(pair);
-            }
-
-
-            index++;
-        }
-
-        int secondCount = sumOfAll(numberOfPartnersCurrent);
-        if (firstCount == secondCount) {
-            hasChanged = false;
-        }
-
-
-
-    }
-
-    private int sumOfAll(int[] toCount) {
-        int sum = 0;
-        for (int i = 0; i < toCount.length; i++) {
-            sum += toCount[i];
-        }
-        return sum;
-    }
-
     public boolean is50PercentOrMoreGone(int original, int newNum) {
         double half =  original / 2;
-        return half >= (double) newNum;
+        return half >= (double) newNum || newNum == 0.0;
     }
 }

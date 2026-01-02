@@ -4,8 +4,8 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-
-        new Brexit(new ReadInput(sc));
+        ReadInput input = new ReadInput(sc);
+        new Brexit(input);
 
 
     }
